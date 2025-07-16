@@ -91,3 +91,6 @@ env/
 
 # mkdocs documentation
 /site/
+
+.DS_Store
+men/.#admin.py
