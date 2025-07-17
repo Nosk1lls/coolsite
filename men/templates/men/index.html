@@ -3,10 +3,13 @@
     <ul class="list-articles">
         {% for p in posts %}
             <li>
-                <div>
-                    <p>Категория {{ p.cat_id }}</p>
-                    <p>Дата: {{ p.time_update|date:"d-m-Y H:i:s" }}</p>
+                <div class="post-meta">
+                    <p class="post-category">Категория {{ p.cat_id }}</p>
+                    <p class="post-date"≈>Дата: {{ p.time_update|date:"d-m-Y H:i:s" }}</p>
                 </div>
+                {% if p.photo %}
+                    <div class="post-photo"><img src="{{ p.photo.url }}", alt="{{ p.title }}"></div>
+                {% endif %}
                 <h2>{{ p.title }}</h2>
                 {% autoescape on %}
                     {{ p.content|linebreaks|truncatewords:50 }}

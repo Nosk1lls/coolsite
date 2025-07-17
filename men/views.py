@@ -1,57 +1,84 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import Http404, HttpResponse
 from .models import Men, Category
-
+from .forms import AddPostForm
 
 menu = [
     {"title": "О сайте", "url_name": "about"},
     {"title": "Добавить статью", "url_name": "add_page"},
     {"title": "Обратная связь", "url_name": "contact"},
-    {"title": "Войти", "url_name": "login"}
+    {"title": "Войти", "url_name": "login"},
 ]
+
+def get_common_context(cat_selected=0):
+    return {
+        "menu": menu,
+        "cats": Category.objects.all(),
+        "cat_selected": cat_selected,
+    }
 
 def index(request):
     posts = Men.objects.all()
-    cats = Category.objects.all()
-    context = {
+    context = get_common_context(cat_selected=0)
+    context.update({
         "posts": posts,
-        "cats": cats,
-        "menu": menu,
         "title": "Главная страница",
-        "cat_selected": 0,
-    }
-    
-    return render(request, 'men/index.html', context=context)
+    })
+    return render(request, "men/index.html", context=context)
 
 def about(request):
-    return render(request, 'men/about.html', {'title': 'О нас'})
+    context = get_common_context()
+    context.update({
+        "title": "О нас",
+    })
+    return render(request, "men/about.html", context=context)
 
 def addpage(request):
-    return HttpResponse("Добавление статьи")
+    if request.method == "POST":
+        form = AddPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+    else:
+        form = AddPostForm()
+    context = get_common_context(cat_selected=0)
+    context.update({
+        "form": form,
+        "title": "Добавление статьи",
+    })
+    return render(request, 'men/addpage.html', context=context)
 
 def contact(request):
-    return HttpResponse("Обратная связь")
+    context = get_common_context()
+    context.update({
+        "title": "Обратная связь",
+    })
+    return render(request, "men/contact.html", context=context)  # Лучше создать шаблон contact.html
 
 def login(request):
-    return HttpResponse("Авторизация")
+    context = get_common_context()
+    context.update({
+        "title": "Авторизация",
+    })
+    return render(request, "men/login.html", context=context)  # Лучше создать шаблон login.html
 
-def show_post(request, post_id):
-    return HttpResponse(f"Отображение статьи с id = {post_id}")
+def show_post(request, post_slug):
+    post = get_object_or_404(Men, slug=post_slug)
+    context = get_common_context(cat_selected=post.cat_id)
+    context.update({
+        "post": post,
+        "title": post.title,
+    })
+    return render(request, "men/post.html", context=context)
 
-def show_category(request, cat_id):
-    posts = Men.objects.filter(cat_id=cat_id)
-    cats = Category.objects.all()
-
-    if len(posts) == 0:
+def show_category(request, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Men.objects.filter(cat_id=category)
+    if not posts.exists():
         raise Http404()
-    
-    context = {
+    context = get_common_context(cat_selected=category.id)
+    context.update({
         "posts": posts,
-        "cats": cats,
-        "menu": menu,
-        "title": "Отображение по рубрикам",
-        "cat_selected": cat_id,
-    }
-    return render(request, 'men/index.html', context=context)
-
+        "title": f"Рубрика: {category.name}",
+    })
+    return render(request, "men/index.html", context=context)
