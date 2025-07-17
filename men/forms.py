@@ -12,6 +12,5 @@ class AddPostForm(forms.ModelForm):
         fields = ["title", "slug", "content", "photo", "is_published", "cat_id"]
         widgets = {
             "title": forms.TextInput(attrs={"size": 60}),
-            "content": forms.Textarea(attrs={"cols": 60, "rows": 10})
+            "content": forms.Textarea(attrs={"cols": 60, "rows": 10}),
         }
-

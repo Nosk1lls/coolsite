@@ -8,7 +8,9 @@
                     <p class="post-date"≈>Дата: {{ p.time_update|date:"d-m-Y H:i:s" }}</p>
                 </div>
                 {% if p.photo %}
-                    <div class="post-photo"><img src="{{ p.photo.url }}", alt="{{ p.title }}"></div>
+                    <div class="post-photo">
+                        <img src="{{ p.photo.url }}", alt="{{ p.title }}">
+                    </div>
                 {% endif %}
                 <h2>{{ p.title }}</h2>
                 {% autoescape on %}
