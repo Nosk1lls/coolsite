@@ -2,16 +2,20 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path
-from .views import index, about, addpage, contact, login, show_post, show_category
+
+from .views import (
+    MenHome, AboutView, AddPage, ContactView, LoginView,
+    ShowPost, MenCategory
+)
 
 urlpatterns = [
-    path("", index, name="home"),
-    path("about/", about, name="about"),
-    path("addpage/", addpage, name="add_page"),
-    path("contact/", contact, name="contact"),
-    path("login/", login, name="login"),
-    path("post/<slug:post_slug>/", show_post, name="post"),
-    path("category/<slug:cat_slug>/", show_category, name="category"),
+    path("", MenHome.as_view(), name="home"),
+    path("about/", AboutView.as_view(), name="about"),
+    path("addpage/", AddPage.as_view(), name="add_page"),
+    path("contact/", ContactView.as_view(), name="contact"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("post/<slug:post_slug>/", ShowPost.as_view(), name="post"),
+    path("category/<slug:cat_slug>/", MenCategory.as_view(), name="category"),
 ]
 
 if settings.DEBUG:

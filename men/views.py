@@ -1,5 +1,7 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import Http404, HttpResponse
+from django.views.generic import ListView, DetailView, CreateView, TemplateView
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.http import Http404
 from .models import Men, Category
 from .forms import AddPostForm
 
@@ -10,7 +12,6 @@ menu = [
     {"title": "Войти", "url_name": "login"},
 ]
 
-
 def get_common_context(cat_selected=0):
     return {
         "menu": menu,
@@ -18,93 +19,79 @@ def get_common_context(cat_selected=0):
         "cat_selected": cat_selected,
     }
 
+class MenHome(ListView):
+    model = Men
+    template_name = "men/index.html"
+    context_object_name = "posts"
 
-def index(request):
-    posts = Men.objects.all()
-    context = get_common_context(cat_selected=0)
-    context.update(
-        {
-            "posts": posts,
-            "title": "Главная страница",
-        }
-    )
-    return render(request, "men/index.html", context=context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(get_common_context(cat_selected=0))
+        context["title"] = "Главная страница"
+        return context
 
+class ShowPost(DetailView):
+    model = Men
+    template_name = "men/post.html"
+    slug_url_kwarg = "post_slug"
+    context_object_name = "post"
 
-def about(request):
-    context = get_common_context()
-    context.update(
-        {
-            "title": "О нас",
-        }
-    )
-    return render(request, "men/about.html", context=context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(get_common_context(cat_selected=self.object.cat_id))
+        context["title"] = self.object.title
+        return context
 
+class MenCategory(ListView):
+    model = Men
+    template_name = "men/index.html"
+    context_object_name = "posts"
+    allow_empty = False
 
-def addpage(request):
-    if request.method == "POST":
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect("home")
-    else:
-        form = AddPostForm()
-    context = get_common_context(cat_selected=0)
-    context.update(
-        {
-            "form": form,
-            "title": "Добавление статьи",
-        }
-    )
-    return render(request, "men/addpage.html", context=context)
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, slug=self.kwargs["cat_slug"])
+        return Men.objects.filter(cat_id=self.category)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(get_common_context(cat_selected=self.category.id))
+        context["title"] = f"Рубрика: {self.category.name}"
+        return context
 
-def contact(request):
-    context = get_common_context()
-    context.update(
-        {
-            "title": "Обратная связь",
-        }
-    )
-    return render(
-        request, "men/contact.html", context=context
-    )  # Лучше создать шаблон contact.html
+class AddPage(CreateView):
+    form_class = AddPostForm
+    template_name = "men/addpage.html"
+    success_url = reverse_lazy("home")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(get_common_context(cat_selected=0))
+        context["title"] = "Добавление статьи"
+        return context
 
-def login(request):
-    context = get_common_context()
-    context.update(
-        {
-            "title": "Авторизация",
-        }
-    )
-    return render(
-        request, "men/login.html", context=context
-    )  # Лучше создать шаблон login.html
+class AboutView(TemplateView):
+    template_name = "men/about.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(get_common_context())
+        context["title"] = "О нас"
+        return context
 
-def show_post(request, post_slug):
-    post = get_object_or_404(Men, slug=post_slug)
-    context = get_common_context(cat_selected=post.cat_id)
-    context.update(
-        {
-            "post": post,
-            "title": post.title,
-        }
-    )
-    return render(request, "men/post.html", context=context)
+class ContactView(TemplateView):
+    template_name = "men/contact.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(get_common_context())
+        context["title"] = "Обратная связь"
+        return context
 
-def show_category(request, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Men.objects.filter(cat_id=category)
-    if not posts.exists():
-        raise Http404()
-    context = get_common_context(cat_selected=category.id)
-    context.update(
-        {
-            "posts": posts,
-            "title": f"Рубрика: {category.name}",
-        }
-    )
-    return render(request, "men/index.html", context=context)
+class LoginView(TemplateView):
+    template_name = "men/login.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(get_common_context())
+        context["title"] = "Авторизация"
+        return context
