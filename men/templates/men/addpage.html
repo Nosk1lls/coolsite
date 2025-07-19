@@ -5,7 +5,7 @@
           method="post"
           enctype="multipart/form-data">
         {% csrf_token %}
-        <div>{{ form.non_field_errors }}</div>
+        {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
         {% for f in form %}
             <p>
                 <label for="{{ f.id_for_label }}">{{ f.label }}:</label>
