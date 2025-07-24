@@ -94,3 +94,6 @@ env/
 
 .DS_Store
 men/.#admin.py
+
+/media/
+*~
