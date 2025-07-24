@@ -2,7 +2,7 @@ from django import forms
 from .models import Men
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .utils import FormControlMixin
+from .mixins import FormControlMixin
 
 
 class AddPostForm(FormControlMixin, forms.ModelForm):

@@ -8,12 +8,12 @@ from django.urls import reverse_lazy
 
 from .models import Men, Category
 from .forms import AddPostForm, RegisterUserForm, ContactForm, CustomLoginForm
-from .utils import DataMixin
+from .mixins import DataMixin
 
 
 class MenHome(DataMixin, ListView):
     model = Men
-    template_name = "men/index.html"
+    template_name = "index.html"
     context_object_name = "posts"
 
     def get_queryset(self):
@@ -27,7 +27,7 @@ class MenHome(DataMixin, ListView):
 
 class ShowPost(DataMixin, DetailView):
     model = Men
-    template_name = "men/post.html"
+    template_name = "post.html"
     slug_url_kwarg = "post_slug"
     context_object_name = "post"
 
@@ -40,7 +40,7 @@ class ShowPost(DataMixin, DetailView):
 
 class MenCategory(DataMixin, ListView):
     model = Men
-    template_name = "men/index.html"
+    template_name = "index.html"
     context_object_name = "posts"
     allow_empty = False
 
@@ -58,7 +58,7 @@ class MenCategory(DataMixin, ListView):
 
 class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddPostForm
-    template_name = "men/addpage.html"
+    template_name = "addpage.html"
     success_url = reverse_lazy("home")
     login_url = reverse_lazy("home")
     raise_exception = True
@@ -70,7 +70,7 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
 
 class AboutView(DataMixin, TemplateView):
-    template_name = "men/about.html"
+    template_name = "about.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -79,7 +79,7 @@ class AboutView(DataMixin, TemplateView):
 
 
 class ContactView(DataMixin, TemplateView):
-    template_name = "men/contact.html"
+    template_name = "contact.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -89,7 +89,7 @@ class ContactView(DataMixin, TemplateView):
 
 class LoginView(DataMixin, LoginView):
     form_class = CustomLoginForm
-    template_name = "men/login.html"
+    template_name = "login.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -102,7 +102,7 @@ class LoginView(DataMixin, LoginView):
 
 class RegisterUser(DataMixin, CreateView):
     form_class = RegisterUserForm
-    template_name = "men/register.html"
+    template_name = "register.html"
     #    success_url = reverse_lazy("login")
 
     def get_context_data(self, **kwargs):
@@ -118,7 +118,7 @@ class RegisterUser(DataMixin, CreateView):
 
 class ContactFormView(DataMixin, FormView):
     form_class = ContactForm
-    template_name = "men/contact.html"
+    template_name = "contact.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
