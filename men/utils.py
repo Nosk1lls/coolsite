@@ -8,9 +8,10 @@ menu = [
     {"title": "Обратная связь", "url_name": "contact"},
 ]
 
+
 class DataMixin:
     paginate_by = 3
-    
+
     def get_user_context(self, **kwargs):
         context = kwargs
         cats = Category.objects.all()
@@ -31,6 +32,5 @@ class FormControlMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            existing_classes = field.widget.attrs.get('class', '')
-            field.widget.attrs['class'] = (existing_classes + ' form-input').strip()
-
+            existing_classes = field.widget.attrs.get("class", "")
+            field.widget.attrs["class"] = (existing_classes + " form-input").strip()

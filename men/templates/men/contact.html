@@ -1,27 +1,16 @@
 {% extends 'men/base.html' %}
-
 {% block content %}
-<h1>Обратная связь</h1>
-
-<form method="post">
-    {% csrf_token %}
-
-    {% if form.non_field_errors %}
-    <div class="form-error">
-        {{ form.non_field_errors }}
-    </div>
-    {% endif %}
-    
-    {% for field in form %}
-        <div class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-                <div class="form-error">{{ field.errors }}</div>
-            {% endif %}
-        </div>
-    {% endfor %}
-
-    <button type="submit" class="btn-submit">Отправить сообщение</button>
-</form>
+    <h1>Обратная связь</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<div class="form-error">{{ field.errors }}</div>{% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn-submit">Отправить сообщение</button>
+    </form>
 {% endblock %}

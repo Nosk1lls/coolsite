@@ -2,7 +2,17 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path
 
-from .views import MenHome, AboutView, AddPage, ContactFormView, LoginView, logout_user, RegisterUser, ShowPost, MenCategory
+from .views import (
+    MenHome,
+    AboutView,
+    AddPage,
+    ContactFormView,
+    LoginView,
+    logout_user,
+    RegisterUser,
+    ShowPost,
+    MenCategory,
+)
 
 urlpatterns = [
     path("", MenHome.as_view(), name="home"),
